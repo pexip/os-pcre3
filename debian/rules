@@ -11,60 +11,57 @@ DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 DEB_HOST_MULTIARCH  ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
-CFLAGS = -Wall -g
 INSTALL = install
 INSTALL_FILE    = $(INSTALL) -p    -o root -g root  -m  644
 INSTALL_PROGRAM = $(INSTALL) -p    -o root -g root  -m  755
 INSTALL_SCRIPT  = $(INSTALL) -p    -o root -g root  -m  755
 INSTALL_DIR     = $(INSTALL) -p -d -o root -g root  -m  755
 
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-CFLAGS += -O0
-else
-CFLAGS += -O2
-endif
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 INSTALL_PROGRAM += -s
 endif
 
-
-config.status: configure
+configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
-	CC_FOR_BUILD=cc CFLAGS="$(CFLAGS)" ./configure \
+	dh_autoreconf
+	CC_FOR_BUILD=cc ./configure \
 		--host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
 		--prefix=/usr --mandir=\$${prefix}/share/man \
 		--infodir=\$${prefix}/share/info \
 		--libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
-		--enable-utf8 --enable-unicode-properties
+		--enable-utf8 --enable-unicode-properties \
+		--disable-silent-rules \
+		$(shell . debian/jit-test) \
+		$(shell DEB_CFLAGS_MAINT_APPEND=-Wall DEB_BUILD_MAINT_OPTIONS=hardening=+all dpkg-buildflags --export=configure)
+	touch configure-stamp
 
-
-build: build-stamp
-build-stamp:  config.status
+build: build-arch build-indep
+build-arch: build-stamp
+build-indep: build-stamp
+build-stamp:  configure-stamp
 	dh_testdir
 
 	# Add here commands to compile the package.
 	$(MAKE)
 ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
-	$(MAKE) check
+	$(MAKE) check VERBOSE=1
 endif
 
 	touch build-stamp
 
-clean: config.status
+clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp
-
+	rm -f configure-stamp build-stamp
 	# Add here commands to clean up after the build process.
 	[ ! -f Makefile ] || $(MAKE) distclean
 ###	-test -r /usr/share/misc/config.sub && \
 ###	  cp -f /usr/share/misc/config.sub config.sub
 ###	-test -r /usr/share/misc/config.guess && \
 ###	  cp -f /usr/share/misc/config.guess config.guess
-
-
 	rm -f dftables testsavedregex
+	dh_autoreconf_clean
 	dh_clean
 
 install: build
@@ -87,6 +84,9 @@ binary-arch: build install
 	mkdir -p debian/libpcre3/lib/$(DEB_HOST_MULTIARCH)
 	mv debian/libpcre3/usr/lib/$(DEB_HOST_MULTIARCH)/libpcre.so.* debian/libpcre3/lib/$(DEB_HOST_MULTIARCH)
 	ln -sf /lib/$(DEB_HOST_MULTIARCH)/libpcre.so.3 debian/libpcre3-dev/usr/lib/$(DEB_HOST_MULTIARCH)/libpcre.so
+	# we never need to reference the library path in pcre-config on
+	# Debian, so clip it out so that the script will be multiarch-safe.
+	sed -i -e"s,/$(DEB_HOST_MULTIARCH),,g" debian/libpcre3-dev/usr/bin/pcre-config
 
 	dh_link -a
 
@@ -105,9 +105,12 @@ binary-arch: build install
 #	dh_undocumented -a
 	dh_installchangelogs -a ChangeLog
 	dh_strip -a --dbg-package=libpcre3-dbg
+	# Don't include pcregrep or libraries from udeb in debug package
+	rm -r debian/libpcre3-dbg/usr/lib/debug/usr/bin 
+	rm debian/libpcre3-dbg/usr/lib/debug/usr/lib/libpcre*
 	dh_compress -a
 	dh_fixperms -a
-	dh_makeshlibs -plibpcre3 --add-udeb="libpcre3-udeb" -V 'libpcre3 (>= 8.10)'
+	dh_makeshlibs -plibpcre3 --add-udeb="libpcre3-udeb" -V 'libpcre3 (>= 1:8.35)'
 	dh_makeshlibs -plibpcrecpp0 -V 'libpcrecpp0 (>= 7.7)'
 	dh_installdeb -a
 #	dh_perl -a
