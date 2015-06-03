@@ -1,3 +1,148 @@
+pcre3 (2:8.35-3.3pexip1) pexip; urgency=low
+
+  * New upstream release; migrate to Jessie
+
+ -- John-Mark Bell <jmb@pexip.com>  Wed, 03 Jun 2015 18:36:37 +0100
+
+pcre3 (2:8.35-3.3) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Upstream patch for heap buffer overflow, CVE-2014-8964, taken from
+    1:8.36-1 (Closes: #770478)
+    Thanks to Salvatore Bonaccorso for the reminder.
+
+ -- Ivo De Decker <ivodd@debian.org>  Sat, 06 Dec 2014 19:58:19 +0100
+
+pcre3 (2:8.35-3.2) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Update shlibs dependency to 1:8.35 for new symbol introduced in upstream
+    version 8.35 (Closes: #767907)
+  * Revert upload of upstream version 8.36 to allow this upload to migrate to
+    jessie.
+
+ -- Ivo De Decker <ivodd@debian.org>  Sat, 06 Dec 2014 19:21:39 +0100
+
+pcre3 (1:8.35-3.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Enable build hardening flags (closes: #656008).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Fri, 19 Sep 2014 01:48:23 +0000
+
+pcre3 (1:8.35-3) unstable; urgency=medium
+
+  Thanks to Simon McVittie for all of the work on this:
+
+  * Run tests with VERBOSE=1 so we can see the logs for failing tests
+    (Closes: #755052)
+  * Apply part of upstream r1472 to fix undefined behaviour when parsing
+    {n} or {m,n} quantifiers, which causes mis-parsing and test failures
+    under gcc 4.9 (Closes: #751828)
+
+ -- Mark Baker <mark@mnb.org.uk>  Wed, 23 Jul 2014 21:19:41 +0100
+
+pcre3 (1:8.35-2) unstable; urgency=medium
+
+  * Build-depends on auto-reconf (Closes: 754540)
+
+ -- Mark Baker <mark@mnb.org.uk>  Sat, 12 Jul 2014 23:03:47 +0100
+
+pcre3 (1:8.35-1) unstable; urgency=medium
+
+  * New upstream release
+  * Use dh-autoreconf
+  * Disable JIT on ppc64el (Closes: 751390) (Thanks Erwan Prioul)
+
+ -- Mark Baker <mark@mnb.org.uk>  Fri, 11 Jul 2014 19:54:51 +0100
+
+pcre3 (1:8.31-5) unstable; urgency=medium
+
+  * Previous attempt at detecting JIT support didn't work when cross
+    compiling. Now runs the host compiler, and doesn't try to run the
+    output (Closes: 745222)
+
+ -- Mark Baker <mark@mnb.org.uk>  Wed, 23 Apr 2014 21:00:35 +0100
+
+pcre3 (1:8.31-4) unstable; urgency=medium
+
+  * Enable JIT compilation only on architectures where it is supported -
+    fixes FTBFS on ones where it isn't (Closes: 745114)
+  * Verbose build logs (Closes: 745069)
+
+ -- Mark Baker <mark@mnb.org.uk>  Fri, 18 Apr 2014 10:06:31 +0100
+
+pcre3 (1:8.31-3) unstable; urgency=medium
+
+  * Enable JIT regex compilation (http://sljit.sourceforge.net/pcre).
+    Note that this has no effect by default so should not break anything;
+    to use it you need to pass a flag to pcre_compile_regex()
+    (Closes: 740954)
+  * Changed shlibs:Depends to 8.20 as pcre_free_study() is not in older
+    versions (Closes: 743164)
+
+ -- Mark Baker <mark@mnb.org.uk>  Tue, 08 Apr 2014 22:37:58 +0100
+
+pcre3 (1:8.31-2) unstable; urgency=low
+
+  * Build -dev package as Multi-arch: same. Thanks Steve Langasek / Ubuntu
+    for the patch (Closes: 696217) 
+
+ -- Mark Baker <mark@mnb.org.uk>  Thu, 03 Jan 2013 20:30:05 +0000
+
+pcre3 (1:8.31-1) unstable; urgency=low
+
+  * New upstream release
+  * Applied patch from upstream bugzilla #1287 to fix bug where wrong
+    value is in re_nsub in some cases (Closes: #686495)
+
+ -- Mark Baker <mark@mnb.org.uk>  Thu, 13 Sep 2012 19:58:45 +0100
+
+pcre3 (1:8.30-5) unstable; urgency=low
+
+  * There is no use in including debug information for the libraries from
+    the udeb in the debug package; more importantly, because the
+    installation system isn't multiarch, if they are included they result
+    in arch specific files in arch independent paths (debug package is 
+    Multi-arch:same). Removed. (Closes: #670018)
+
+ -- Mark Baker <mark@mnb.org.uk>  Tue, 01 May 2012 22:38:42 +0100
+
+pcre3 (1:8.30-4) unstable; urgency=low
+
+  * Reluctantly using an epoch, as it seems the funny version number with
+    extra dots causes problems
+  * Bumped standard version to 3.9.3. No changes needed
+  * Converted to use new source format / quilt
+  * Put back obsolete pcre_info() API that up
+  * Don't include pcregrep binary in debug package
+
+  Thanks to Elimar Riesebieter for the conversion to the new source format.
+
+ -- Mark Baker <mark@mnb.org.uk>  Fri, 23 Mar 2012 22:34:54 +0000
+
+pcre3 (8.30..-3) unstable; urgency=low
+
+  * configure: fixed libpcreposix version (this is not the same bug as the
+    previous one, though it's in the same few lines)
+
+ -- Mark Baker <mark@mnb.org.uk>  Thu, 22 Mar 2012 19:45:03 +0000
+
+pcre3 (8.30..-2) unstable; urgency=low
+
+  * configure: Correct library version so soname is libpcre.so.3 instead
+    of .2 (Closes: #664983)
+  * Horrible version number is because of NMU of "8.30.really8.12-1.1";
+    this will sort between that and 8.31-1
+  
+ -- Mark Baker <mark@mnb.org.uk>  Thu, 22 Mar 2012 17:52:35 +0000
+
+pcre3 (8.30-1) unstable; urgency=low
+
+  * New upstream release (Closes:#664166)
+
+ -- Mark Baker <mark@mnb.org.uk>  Wed, 21 Mar 2012 21:03:39 +0000
+
 pcre3 (8.12-4pexip1) pexip; urgency=low
 
   * Prepare Pexip packaging
