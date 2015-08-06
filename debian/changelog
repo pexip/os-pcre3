@@ -1,3 +1,27 @@
+pcre3 (2:8.35-3.3pexip2) pexip; urgency=low
+
+  * Backport Vivid security update (2:8.35-3.3ubuntu1.1):
+    - Seyeong Kim <seyeong.kim@canonical.com>  Tue, 21 Jul 2015 16:37:23 +0900
+    - SECURITY UPDATE: PCRE Library Heap Overflow Vulnerability
+      + debian/patches/cve-2015-2325.patch: change some variables
+        pointer to integer, and related contents. Based on upstream patch
+      + CVE-2015-2325
+    - SECURITY UPDATE: PCRE Library Heap overflow Vulnerability II
+      + debian/patches/cve-2015-2326.patch: take save_hwm_offset out
+        from adjust_recurse. Based on upstream patch
+      + CVE-2015-2326
+    - SECURITY UPDATE: PCRE Library Heap Overflow Vulnerability
+      + debian/patches/cve-2015-3210.patch: change checking if 
+        oc->number == recno code, Based on upstream patch
+      + CVE-2015-3210
+    - SECURITY UPDATE: PCRE Library Heap Overflow Vulnerability in 
+      find_fixedlength()
+      + debian/patches/cve-2015-5073.patch: missing test code
+        Based on upstream patch
+      + CVE-2015-5073
+
+ -- John-Mark Bell <jmb@pexip.com>  Thu, 06 Aug 2015 02:11:42 +0100
+
 pcre3 (2:8.35-3.3pexip1) pexip; urgency=low
 
   * New upstream release; migrate to Jessie
