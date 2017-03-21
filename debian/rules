@@ -21,6 +21,12 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 INSTALL_PROGRAM += -s
 endif
 
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+  NJOBS = -j$(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+endif
+
+ENABLE_JIT=$(shell . debian/jit-test)
+
 configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
@@ -32,7 +38,9 @@ configure-stamp:
 		--libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
 		--enable-utf8 --enable-unicode-properties \
 		--disable-silent-rules \
-		$(shell . debian/jit-test) \
+		$(ENABLE_JIT) \
+		--enable-pcre16 \
+		--enable-pcre32 \
 		$(shell DEB_CFLAGS_MAINT_APPEND=-Wall DEB_BUILD_MAINT_OPTIONS=hardening=+all dpkg-buildflags --export=configure)
 	touch configure-stamp
 
@@ -43,7 +51,7 @@ build-stamp:  configure-stamp
 	dh_testdir
 
 	# Add here commands to compile the package.
-	$(MAKE)
+	$(MAKE) $(NJOBS)
 ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
 	$(MAKE) check VERBOSE=1
 endif
@@ -61,6 +69,9 @@ clean:
 ###	-test -r /usr/share/misc/config.guess && \
 ###	  cp -f /usr/share/misc/config.guess config.guess
 	rm -f dftables testsavedregex
+	rm -f debian/libpcre3.symbols
+	rm -f debian/libpcre16-3.symbols
+	rm -f debian/libpcre32-3.symbols
 	dh_autoreconf_clean
 	dh_clean
 
@@ -110,8 +121,18 @@ binary-arch: build install
 	rm debian/libpcre3-dbg/usr/lib/debug/usr/lib/libpcre*
 	dh_compress -a
 	dh_fixperms -a
-	dh_makeshlibs -plibpcre3 --add-udeb="libpcre3-udeb" -V 'libpcre3 (>= 1:8.35)'
-	dh_makeshlibs -plibpcrecpp0 -V 'libpcrecpp0 (>= 7.7)'
+ifneq (,$(ENABLE_JIT))
+	sed -e 's/JIT//' debian/libpcre3.symbols.in > debian/libpcre3.symbols
+	sed -e 's/JIT//' debian/libpcre16-3.symbols.in > debian/libpcre16-3.symbols
+	sed -e 's/JIT//' debian/libpcre32-3.symbols.in > debian/libpcre32-3.symbols
+else
+	sed -e 's/JIT/#/' debian/libpcre3.symbols.in > debian/libpcre3.symbols
+	sed -e 's/JIT/#/' debian/libpcre16-3.symbols.in > debian/libpcre16-3.symbols
+	sed -e 's/JIT/#/' debian/libpcre32-3.symbols.in > debian/libpcre32-3.symbols
+endif
+	dh_makeshlibs -plibpcre3 --add-udeb="libpcre3-udeb" -V 'libpcre3 (>= 1:8.35)' -- -c4
+	dh_makeshlibs -plibpcrecpp0v5 -V 'libpcrecpp0v5 (>= 7.7)' -- -c4
+	dh_makeshlibs -plibpcre16-3 -plibpcre32-3 -- -c4
 	dh_installdeb -a
 #	dh_perl -a
 	dh_shlibdeps -a -ldebian/libpcre3/usr/lib/$(DEB_HOST_MULTIARCH)
