@@ -1,11 +1,16 @@
 From: Mark Baker <mark@mnb.org.uk>
-Description: Fix PCRE posix interface otherwise libc regexes are used (Bug 22525)
+Date: Wed, 13 Jul 2016 21:20:13 +0100
+Subject: pcreposix
 
-Index: pcre-8.30/pcreposix.h
-===================================================================
---- pcre-8.30.orig/pcreposix.h	2011-12-28 17:57:51.000000000 +0100
-+++ pcre-8.30/pcreposix.h	2012-03-23 11:05:02.223026534 +0100
-@@ -133,14 +133,19 @@
+---
+ pcreposix.h | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/pcreposix.h b/pcreposix.h
+index c77c0b0..4527f78 100644
+--- a/pcreposix.h
++++ b/pcreposix.h
+@@ -133,14 +133,19 @@ file. */
  
  /* The functions */
  

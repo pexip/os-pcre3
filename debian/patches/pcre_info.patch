@@ -1,9 +1,19 @@
 From: Mark Baker <mark@mnb.org.uk>
-Description: Restore obsolete pcre_info() API for compatiblity
+Date: Wed, 13 Jul 2016 21:20:13 +0100
+Subject: pcre_info
 
+---
+ Makefile.am |  3 ++-
+ Makefile.in | 79 ++++++++++++++++++++++++++++-------------------------
+ pcre_info.c | 90 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 134 insertions(+), 38 deletions(-)
+ create mode 100644 pcre_info.c
+
+diff --git a/Makefile.am b/Makefile.am
+index 22b6947..59c564a 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -233,6 +233,7 @@
+@@ -233,6 +233,7 @@ libpcre_la_SOURCES = \
    pcre_fullinfo.c \
    pcre_get.c \
    pcre_globals.c \
@@ -11,7 +21,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
    pcre_internal.h \
    pcre_jit_compile.c \
    pcre_maketables.c \
-@@ -647,7 +648,7 @@
+@@ -648,7 +649,7 @@ test: check ;
  # nice DLL for Windows use". (It is used by the pcre.dll target.)
  DLL_OBJS= pcre_byte_order.o pcre_compile.o pcre_config.o \
  	pcre_dfa_exec.o pcre_exec.o pcre_fullinfo.o pcre_get.o \
@@ -20,9 +30,11 @@ Description: Restore obsolete pcre_info() API for compatiblity
  	pcre_newline.o pcre_ord2utf8.o pcre_refcount.o \
  	pcre_study.o pcre_tables.o pcre_ucd.o \
  	pcre_valid_utf8.o pcre_version.o pcre_chartables.o \
+diff --git a/Makefile.in b/Makefile.in
+index 6d03912..22c1ae9 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -216,11 +216,11 @@
+@@ -218,11 +218,11 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
  libpcre_la_DEPENDENCIES =
  am__libpcre_la_SOURCES_DIST = pcre_byte_order.c pcre_compile.c \
  	pcre_config.c pcre_dfa_exec.c pcre_exec.c pcre_fullinfo.c \
@@ -39,7 +51,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  @WITH_PCRE8_TRUE@am_libpcre_la_OBJECTS =  \
  @WITH_PCRE8_TRUE@	libpcre_la-pcre_byte_order.lo \
  @WITH_PCRE8_TRUE@	libpcre_la-pcre_compile.lo \
-@@ -230,6 +230,7 @@
+@@ -232,6 +232,7 @@ am__libpcre_la_SOURCES_DIST = pcre_byte_order.c pcre_compile.c \
  @WITH_PCRE8_TRUE@	libpcre_la-pcre_fullinfo.lo \
  @WITH_PCRE8_TRUE@	libpcre_la-pcre_get.lo \
  @WITH_PCRE8_TRUE@	libpcre_la-pcre_globals.lo \
@@ -47,7 +59,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  @WITH_PCRE8_TRUE@	libpcre_la-pcre_jit_compile.lo \
  @WITH_PCRE8_TRUE@	libpcre_la-pcre_maketables.lo \
  @WITH_PCRE8_TRUE@	libpcre_la-pcre_newline.lo \
-@@ -249,7 +250,7 @@
+@@ -251,7 +252,7 @@ libpcre_la_OBJECTS = $(am_libpcre_la_OBJECTS) \
  AM_V_lt = $(am__v_lt_@AM_V@)
  am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
  am__v_lt_0 = --silent
@@ -56,7 +68,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  libpcre_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
  	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libpcre_la_CFLAGS) \
  	$(CFLAGS) $(libpcre_la_LDFLAGS) $(LDFLAGS) -o $@
-@@ -447,11 +448,11 @@
+@@ -449,11 +450,11 @@ am__v_P_1 = :
  AM_V_GEN = $(am__v_GEN_@AM_V@)
  am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
  am__v_GEN_0 = @echo "  GEN     " $@;
@@ -70,7 +82,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  DEFAULT_INCLUDES = -I.@am__isrc@
  depcomp = $(SHELL) $(top_srcdir)/depcomp
  am__depfiles_maybe = depfiles
-@@ -465,7 +466,7 @@
+@@ -467,7 +468,7 @@ LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
  AM_V_CC = $(am__v_CC_@AM_V@)
  am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
  am__v_CC_0 = @echo "  CC      " $@;
@@ -79,7 +91,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  CCLD = $(CC)
  LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
  	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-@@ -473,7 +474,7 @@
+@@ -475,7 +476,7 @@ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
  AM_V_CCLD = $(am__v_CCLD_@AM_V@)
  am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
  am__v_CCLD_0 = @echo "  CCLD    " $@;
@@ -88,7 +100,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
  	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
  LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-@@ -483,7 +484,7 @@
+@@ -485,7 +486,7 @@ LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
  AM_V_CXX = $(am__v_CXX_@AM_V@)
  am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
  am__v_CXX_0 = @echo "  CXX     " $@;
@@ -97,7 +109,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  CXXLD = $(CXX)
  CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
  	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-@@ -491,7 +492,7 @@
+@@ -493,7 +494,7 @@ CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
  AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
  am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
  am__v_CXXLD_0 = @echo "  CXXLD   " $@;
@@ -106,7 +118,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  SOURCES = $(libpcre_la_SOURCES) $(nodist_libpcre_la_SOURCES) \
  	$(libpcre16_la_SOURCES) $(nodist_libpcre16_la_SOURCES) \
  	$(libpcre32_la_SOURCES) $(nodist_libpcre32_la_SOURCES) \
-@@ -820,9 +821,6 @@
+@@ -832,9 +833,6 @@ PCRE_MAJOR = @PCRE_MAJOR@
  PCRE_MINOR = @PCRE_MINOR@
  PCRE_PRERELEASE = @PCRE_PRERELEASE@
  PCRE_STATIC_CFLAG = @PCRE_STATIC_CFLAG@
@@ -116,7 +128,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  PTHREAD_CC = @PTHREAD_CC@
  PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
  PTHREAD_LIBS = @PTHREAD_LIBS@
-@@ -832,8 +830,6 @@
+@@ -844,8 +842,6 @@ SET_MAKE = @SET_MAKE@
  SHELL = @SHELL@
  SHTOOL = @SHTOOL@
  STRIP = @STRIP@
@@ -125,7 +137,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  VERSION = @VERSION@
  VISIBILITY_CFLAGS = @VISIBILITY_CFLAGS@
  VISIBILITY_CXXFLAGS = @VISIBILITY_CXXFLAGS@
-@@ -976,7 +972,7 @@
+@@ -988,7 +984,7 @@ dist_noinst_DATA = $(pcrecpp_html)
  # The Libtool libraries to install.  We'll add to this later.
  lib_LTLIBRARIES = $(am__append_4) $(am__append_5) $(am__append_6) \
  	$(am__append_20) $(am__append_22)
@@ -134,7 +146,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  dist_noinst_SCRIPTS = RunTest $(am__append_39)
  
  # Additional files to delete on 'make clean' and 'make maintainer-clean'.
-@@ -1081,6 +1077,7 @@
+@@ -1093,6 +1089,7 @@ BUILT_SOURCES = pcre_chartables.c
  @WITH_PCRE8_TRUE@  pcre_fullinfo.c \
  @WITH_PCRE8_TRUE@  pcre_get.c \
  @WITH_PCRE8_TRUE@  pcre_globals.c \
@@ -142,7 +154,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  @WITH_PCRE8_TRUE@  pcre_internal.h \
  @WITH_PCRE8_TRUE@  pcre_jit_compile.c \
  @WITH_PCRE8_TRUE@  pcre_maketables.c \
-@@ -1098,7 +1095,7 @@
+@@ -1110,7 +1107,7 @@ BUILT_SOURCES = pcre_chartables.c
  
  @WITH_PCRE8_TRUE@libpcre_la_CFLAGS = $(VISIBILITY_CFLAGS) $(AM_CFLAGS) \
  @WITH_PCRE8_TRUE@	$(am__append_7) $(am__append_10)
@@ -151,7 +163,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  @WITH_PCRE8_TRUE@nodist_libpcre_la_SOURCES = \
  @WITH_PCRE8_TRUE@  pcre_chartables.c
  
-@@ -1129,7 +1126,7 @@
+@@ -1141,7 +1138,7 @@ BUILT_SOURCES = pcre_chartables.c
  @WITH_PCRE16_TRUE@libpcre16_la_CFLAGS = $(VISIBILITY_CFLAGS) \
  @WITH_PCRE16_TRUE@	$(AM_CFLAGS) $(am__append_8) \
  @WITH_PCRE16_TRUE@	$(am__append_11)
@@ -160,7 +172,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  @WITH_PCRE16_TRUE@nodist_libpcre16_la_SOURCES = \
  @WITH_PCRE16_TRUE@  pcre_chartables.c
  
-@@ -1160,7 +1157,7 @@
+@@ -1172,7 +1169,7 @@ BUILT_SOURCES = pcre_chartables.c
  @WITH_PCRE32_TRUE@libpcre32_la_CFLAGS = $(VISIBILITY_CFLAGS) \
  @WITH_PCRE32_TRUE@	$(AM_CFLAGS) $(am__append_9) \
  @WITH_PCRE32_TRUE@	$(am__append_12)
@@ -169,7 +181,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  @WITH_PCRE32_TRUE@nodist_libpcre32_la_SOURCES = \
  @WITH_PCRE32_TRUE@  pcre_chartables.c
  
-@@ -1215,7 +1212,7 @@
+@@ -1227,7 +1224,7 @@ pcretest_LDADD = $(LIBREADLINE) $(am__append_30) $(am__append_32) \
  # nice DLL for Windows use". (It is used by the pcre.dll target.)
  DLL_OBJS = pcre_byte_order.o pcre_compile.o pcre_config.o \
  	pcre_dfa_exec.o pcre_exec.o pcre_fullinfo.o pcre_get.o \
@@ -178,7 +190,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  	pcre_newline.o pcre_ord2utf8.o pcre_refcount.o \
  	pcre_study.o pcre_tables.o pcre_ucd.o \
  	pcre_valid_utf8.o pcre_version.o pcre_chartables.o \
-@@ -1301,8 +1298,8 @@
+@@ -1313,8 +1310,8 @@ pcrecpp_man = doc/pcrecpp.3
  @WITH_GCOV_TRUE@COVERAGE_NAME = $(PACKAGE)-$(VERSION)
  @WITH_GCOV_TRUE@COVERAGE_OUTPUT_FILE = $(COVERAGE_NAME)-coverage.info
  @WITH_GCOV_TRUE@COVERAGE_OUTPUT_DIR = $(COVERAGE_NAME)-coverage
@@ -189,7 +201,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  @WITH_GCOV_TRUE@coverage_quiet = $(coverage_quiet_$(V))
  @WITH_GCOV_TRUE@coverage_quiet_ = $(coverage_quiet_$(AM_DEFAULT_VERBOSITY))
  @WITH_GCOV_TRUE@coverage_quiet_0 = --quiet
-@@ -1353,7 +1350,7 @@
+@@ -1364,7 +1361,7 @@ config.h: stamp-h1
  stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
  	@rm -f stamp-h1
  	cd $(top_builddir) && $(SHELL) ./config.status config.h
@@ -198,7 +210,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
  	rm -f stamp-h1
  	touch $@
-@@ -1414,19 +1411,19 @@
+@@ -1425,19 +1422,19 @@ clean-libLTLIBRARIES:
  	  rm -f $${locs}; \
  	}
  
@@ -223,7 +235,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  	$(AM_V_CCLD)$(libpcreposix_la_LINK) $(am_libpcreposix_la_rpath) $(libpcreposix_la_OBJECTS) $(libpcreposix_la_LIBADD) $(LIBS)
  install-binPROGRAMS: $(bin_PROGRAMS)
  	@$(NORMAL_INSTALL)
-@@ -1487,31 +1484,31 @@
+@@ -1498,31 +1495,31 @@ clean-noinstPROGRAMS:
  	echo " rm -f" $$list; \
  	rm -f $$list
  
@@ -262,7 +274,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  	@rm -f pcretest$(EXEEXT)
  	$(AM_V_CCLD)$(pcretest_LINK) $(pcretest_OBJECTS) $(pcretest_LDADD) $(LIBS)
  install-binSCRIPTS: $(bin_SCRIPTS)
-@@ -1612,6 +1609,7 @@
+@@ -1623,6 +1620,7 @@ distclean-compile:
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_fullinfo.Plo@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_get.Plo@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_globals.Plo@am__quote@
@@ -270,7 +282,7 @@ Description: Restore obsolete pcre_info() API for compatiblity
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_jit_compile.Plo@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_maketables.Plo@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_newline.Plo@am__quote@
-@@ -1715,6 +1713,13 @@
+@@ -1726,6 +1724,13 @@ libpcre_la-pcre_globals.lo: pcre_globals.c
  @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
  @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpcre_la_CFLAGS) $(CFLAGS) -c -o libpcre_la-pcre_globals.lo `test -f 'pcre_globals.c' || echo '$(srcdir)/'`pcre_globals.c
  
@@ -284,16 +296,9 @@ Description: Restore obsolete pcre_info() API for compatiblity
  libpcre_la-pcre_jit_compile.lo: pcre_jit_compile.c
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpcre_la_CFLAGS) $(CFLAGS) -MT libpcre_la-pcre_jit_compile.lo -MD -MP -MF $(DEPDIR)/libpcre_la-pcre_jit_compile.Tpo -c -o libpcre_la-pcre_jit_compile.lo `test -f 'pcre_jit_compile.c' || echo '$(srcdir)/'`pcre_jit_compile.c
  @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libpcre_la-pcre_jit_compile.Tpo $(DEPDIR)/libpcre_la-pcre_jit_compile.Plo
-@@ -2992,8 +2997,8 @@
- 	@echo "it deletes files that may require special tools to rebuild."
- 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
- 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
--@WITH_GCOV_FALSE@clean-local:
- @WITH_GCOV_FALSE@distclean-local:
-+@WITH_GCOV_FALSE@clean-local:
- clean: clean-am
- 
- clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
+diff --git a/pcre_info.c b/pcre_info.c
+new file mode 100644
+index 0000000..17dafea
 --- /dev/null
 +++ b/pcre_info.c
 @@ -0,0 +1,90 @@
