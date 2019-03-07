@@ -53,7 +53,9 @@ build-stamp:  configure-stamp
 	# Add here commands to compile the package.
 	$(MAKE) $(NJOBS)
 ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
-	$(MAKE) check VERBOSE=1
+	#ulimit returns EPERM on the freebsd buildds, but that's OK
+	#as stack limit increase only really necessary on s390
+	ulimit -s unlimited || true ; $(MAKE) check VERBOSE=1
 endif
 
 	touch build-stamp
@@ -116,9 +118,6 @@ binary-arch: build install
 #	dh_undocumented -a
 	dh_installchangelogs -a ChangeLog
 	dh_strip -a --dbg-package=libpcre3-dbg
-	# Don't include pcregrep or libraries from udeb in debug package
-	rm -r debian/libpcre3-dbg/usr/lib/debug/usr/bin 
-	rm debian/libpcre3-dbg/usr/lib/debug/usr/lib/libpcre*
 	dh_compress -a
 	dh_fixperms -a
 ifneq (,$(ENABLE_JIT))
