@@ -1,3 +1,66 @@
+pcre3 (2:8.39-12) unstable; urgency=medium
+
+  * Patch from Andrej Shadura <andrew.shadura@collabora.co.uk> to mark one
+    more STL symbol as optional (Closes: #923743).
+
+ -- Matthew Vernon <matthew@debian.org>  Thu, 07 Mar 2019 15:30:15 +0000
+
+pcre3 (2:8.39-11) unstable; urgency=medium
+
+  [ Matthias Klose ]
+  * Mark 2 STL symbols as optional (Closes: #904008)
+
+  [ Matthew Vernon ]
+  * Bump debian/compat to 11 (Closes: #646973)
+  * Fixes to debian/rules so package builds with dh compat 11
+
+ -- Matthew Vernon <matthew@debian.org>  Sat, 21 Jul 2018 14:59:04 +0100
+
+pcre3 (2:8.39-10) unstable; urgency=high
+
+  * Update symbols file (Closes: #897834
+
+ -- Matthew Vernon <matthew@debian.org>  Tue, 17 Jul 2018 18:59:42 +0100
+
+pcre3 (2:8.39-9) unstable; urgency=medium
+
+  * Update symbols file (Closes: #888921)
+
+ -- Matthew Vernon <matthew@debian.org>  Sat, 03 Feb 2018 18:27:50 +0000
+
+pcre3 (2:8.39-8) unstable; urgency=medium
+
+  * drive ulimit correctly (Closes: #876299)
+
+ -- Matthew Vernon <matthew@debian.org>  Mon, 04 Dec 2017 05:27:10 +0000
+
+pcre3 (2:8.39-7) unstable; urgency=low
+
+  * increase stack limit before running tests (Closes: #876299)
+
+ -- Matthew Vernon <matthew@debian.org>  Sun, 03 Dec 2017 12:21:44 +0000
+
+pcre3 (2:8.39-6) unstable; urgency=medium
+
+  * patch from Sergei from MariaDB (via Ondřej Surý) to fix stack frame
+    size detection (Closes: #878107, #876299)
+
+ -- Matthew Vernon <matthew@debian.org>  Thu, 30 Nov 2017 15:38:57 +0000
+
+pcre3 (2:8.39-5) unstable; urgency=medium
+
+  * patch from Katsuhiko Nishimra to symbols file to fix FTBFS with gcc7
+    (Closes: #876046, #853606)
+
+ -- Matthew Vernon <matthew@debian.org>  Tue, 19 Sep 2017 22:10:37 +0100
+
+pcre3 (2:8.39-4) unstable; urgency=low
+
+  * Remove now-deprecated Pre-Depends on multiarch-support (not needed
+    since jessie) (Closes: #865987)
+
+ -- Matthew Vernon <matthew@debian.org>  Sun, 23 Jul 2017 16:20:23 +0100
+
 pcre3 (2:8.39-3pexip1) pexip; urgency=medium
 
   * Migrate to Stretch
