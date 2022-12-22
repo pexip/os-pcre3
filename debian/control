@@ -8,7 +8,7 @@ Build-Depends: debhelper (>= 11~), dpkg-dev (>= 1.16.0), dh-autoreconf
 Package: libpcre3
 Section: libs
 Architecture: any
-Priority: important
+Priority: optional
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libpcre3-dev (<= 4.3-3)
 Breaks:
@@ -33,7 +33,7 @@ Package: libpcre3-udeb
 Section: debian-installer
 Package-Type: udeb
 Architecture: any
-Priority: important
+Priority: optional
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libpcre3-dev (<= 4.3-3)
 Description: Old Perl 5 Compatible Regular Expression Library - runtime files (udeb)
@@ -60,7 +60,7 @@ Package: libpcre3-dev
 Section: libdevel
 Architecture: any
 Multi-Arch: same
-Depends: libc6-dev, libpcre3 (= ${binary:Version}), libpcre16-3 (= ${binary:Version}), libpcre32-3 (= ${binary:Version}), libpcrecpp0v5 (= ${binary:Version}), ${misc:Depends}
+Depends: libc-dev, libpcre3 (= ${binary:Version}), libpcre16-3 (= ${binary:Version}), libpcre32-3 (= ${binary:Version}), libpcrecpp0v5 (= ${binary:Version}), ${misc:Depends}
 Description: Old Perl 5 Compatible Regular Expression Library - development files
  This is a library of functions to support regular expressions whose syntax 
  and semantics are as close as possible to those of the Perl 5 language.
